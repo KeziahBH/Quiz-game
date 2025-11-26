@@ -1,76 +1,43 @@
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-
-public class QuizHttpServer {
-
-    public static void main(String[] args) throws Exception {
-        System.out.println("Starting Quiz API server...");
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        server.createContext("/questions", new QuestionHandler());
-        server.start();
-
-        System.out.println("Server running at: http://localhost:8080/questions");
+import java.util.*;
+public class QuestionService {
+    Question[] questions = new Question[5];
+    String selection[] = new String[5];
+    public QuestionService(){
+        questions[0] = new Question(1, "What makes java platform independent?", "jvm", "code", "nothing", "compiler", "jvm");
+        questions[1] = new Question(2, "What's the latest jdk version?", "17", "21", "24", "30", "24");
+        questions[2] = new Question(3, "What does it mean by method overloading?", "same method signature and body", "same method name but different para or type", "option1", "none of the above", "same method name but different para or type");
+        questions[3] = new Question(4, "What makes java reusable?", "jvm", "code", "functions", "compiler", "functions");
+        questions[4] = new Question(5, "Java is which type of lang?", "procedural", "functional", "object oriented", "none of the above", "object oriented");
     }
 
-    static class QuestionHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
-                exchange.sendResponseHeaders(405, -1);
-                return;
+    public void playQuiz(){
+        int i = 0;
+        for(Question q : questions){
+           System.out.println("Question no. : " + q.getId());
+           System.out.println(q.getQuestion());
+           System.out.println(q.getOpt1());
+           System.out.println(q.getOpt2());
+           System.out.println(q.getOpt3());
+           System.out.println(q.getOpt4());
+           Scanner scn = new Scanner(System.in);
+           selection[i] = scn.nextLine();
+           i++;
+        }
+        
+        for(String s : selection){
+            System.out.println(s);
+        }
+    }
+    public void printScore(){
+        int score = 0;
+        for(int i = 0; i < (questions.length); i++){
+            Question que = questions[i];
+            String actualAnswer = que.getAnswer();
+            String userAnswer = selection[i];
+            if(actualAnswer.equals(userAnswer)){
+                score++;
             }
-
-            QuestionService service = new QuestionService();
-            Question[] questions = service.questions;
-
-            String json = convertToJson(questions);
-
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-
-            byte[] response = json.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(200, response.length);
-
-            OutputStream os = exchange.getResponseBody();
-            os.write(response);
-            os.close();
         }
-    }
-
-    private static String convertToJson(Question[] qArr) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-
-        for (int i = 0; i < qArr.length; i++) {
-            Question q = qArr[i];
-
-            sb.append("{")
-              .append("\"id\":").append(q.getId()).append(",")
-              .append("\"question\":\"").append(escape(q.getQuestion())).append("\",")
-              .append("\"options\":[")
-              .append("\"").append(escape(q.getOpt1())).append("\",")
-              .append("\"").append(escape(q.getOpt2())).append("\",")
-              .append("\"").append(escape(q.getOpt3())).append("\",")
-              .append("\"").append(escape(q.getOpt4())).append("\"")
-              .append("],")
-              .append("\"answer\":\"").append(escape(q.getAnswer())).append("\"")
-              .append("}");
-
-            if (i < qArr.length - 1) sb.append(",");
-        }
-        sb.append("]");
-
-        return sb.toString();
-    }
-
-    private static String escape(String s) {
-        return s.replace("\"", "\\\"");
+        System.out.println("Your score is: " + score);
     }
 }
