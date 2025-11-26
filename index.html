@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Java Quiz Game</h1>
+
+    <div id="quiz-box">
+        <p id="question-text">Loading...</p>
+        <div id="options"></div>
+        <button id="next-btn" disabled>Next</button>
+    </div>
+
+    <div id="result-box" class="hidden">
+        <h2>Quiz Completed</h2>
+        <p>Your Score: <span id="final-score"></span></p>
+        <button onclick="restart()">Restart</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
